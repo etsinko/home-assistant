@@ -40,9 +40,6 @@ CONF_SOURCES = 'sources'
 
 DATA_MONOPRICE = 'monoprice'
 
-SERVICE_SNAPSHOT = 'monoprice_snapshot'
-SERVICE_RESTORE = 'monoprice_restore'
-
 # Valid zone ids: 11-16 or 21-26 or 31-36
 ZONE_IDS = vol.All(vol.Coerce(int), vol.Any(vol.Range(min=11, max=16),
                                             vol.Range(min=21, max=26),
@@ -82,33 +79,6 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
                                                        extra[CONF_NAME]))
 
     add_devices(hass.data[DATA_MONOPRICE], True)
-
-    descriptions = load_yaml_config_file(
-        path.join(path.dirname(__file__), 'services.yaml'))
-
-    def service_handle(service):
-        """Handle for services."""
-        entity_ids = service.data.get(ATTR_ENTITY_ID)
-
-        if entity_ids:
-            devices = [device for device in hass.data[DATA_MONOPRICE]
-                       if device.entity_id in entity_ids]
-        else:
-            devices = hass.data[DATA_MONOPRICE]
-
-        for device in devices:
-            if service.service == SERVICE_SNAPSHOT:
-                device.snapshot()
-            elif service.service == SERVICE_RESTORE:
-                device.restore()
-
-    hass.services.register(
-        DOMAIN, SERVICE_SNAPSHOT, service_handle,
-        descriptions.get(SERVICE_SNAPSHOT), schema=MEDIA_PLAYER_SCHEMA)
-
-    hass.services.register(
-        DOMAIN, SERVICE_RESTORE, service_handle,
-        descriptions.get(SERVICE_RESTORE), schema=MEDIA_PLAYER_SCHEMA)
 
 
 class MonopriceZone(MediaPlayerDevice):

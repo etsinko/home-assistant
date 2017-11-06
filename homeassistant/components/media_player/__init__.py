@@ -56,6 +56,8 @@ ENTITY_IMAGE_CACHE = {
 SERVICE_PLAY_MEDIA = 'play_media'
 SERVICE_SELECT_SOURCE = 'select_source'
 SERVICE_CLEAR_PLAYLIST = 'clear_playlist'
+SERVICE_SNAPSHOT = 'snapshot'
+SERVICE_RESTORE = 'restore'
 
 ATTR_MEDIA_VOLUME_LEVEL = 'volume_level'
 ATTR_MEDIA_VOLUME_MUTED = 'is_volume_muted'
@@ -151,6 +153,8 @@ SERVICE_TO_METHOD = {
     SERVICE_MEDIA_NEXT_TRACK: {'method': 'async_media_next_track'},
     SERVICE_MEDIA_PREVIOUS_TRACK: {'method': 'async_media_previous_track'},
     SERVICE_CLEAR_PLAYLIST: {'method': 'async_clear_playlist'},
+    SERVICE_SNAPSHOT: {'method': 'async_snapshot'},
+    SERVICE_RESTORE: {'method': 'async_restore'},
     SERVICE_VOLUME_SET: {
         'method': 'async_set_volume_level',
         'schema': MEDIA_PLAYER_SET_VOLUME_SCHEMA},
@@ -399,6 +403,9 @@ def async_setup(hass, config):
         elif service.service == SERVICE_SHUFFLE_SET:
             params[ATTR_MEDIA_SHUFFLE] = \
                 service.data.get(ATTR_MEDIA_SHUFFLE)
+        elif service.service in [SERVICE_RESTORE, SERVICE_SNAPSHOT]:
+            params = service.data.copy()
+            params.pop(ATTR_ENTITY_ID, None)
         target_players = component.async_extract_from_service(service)
 
         update_tasks = []
@@ -725,6 +732,18 @@ class MediaPlayerDevice(Entity):
         This method must be run in the event loop and returns a coroutine.
         """
         return self.hass.async_add_job(self.clear_playlist)
+
+    def snapshot(self, **kwargs):
+        raise NotImplemented()
+
+    def async_snapshot(self, **kwargs):
+        return self.hass.async_add_job(ft.partial(self.snapshot, **kwargs))
+
+    def restore(self, **kwargs):
+        raise NotImplemented()
+
+    def async_restore(self, **kwargs):
+        return self.hass.async_add_job(ft.partial(self.restore, **kwargs))
 
     def set_shuffle(self, shuffle):
         """Enable/disable shuffle mode."""

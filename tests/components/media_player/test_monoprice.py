@@ -6,13 +6,13 @@ import voluptuous as vol
 from collections import defaultdict
 from homeassistant.components.media_player import (
     DOMAIN, SUPPORT_TURN_ON, SUPPORT_TURN_OFF, SUPPORT_VOLUME_MUTE,
-    SUPPORT_VOLUME_SET, SUPPORT_VOLUME_STEP, SUPPORT_SELECT_SOURCE)
+    SUPPORT_VOLUME_SET, SUPPORT_VOLUME_STEP, SUPPORT_SELECT_SOURCE,
+    SERVICE_SNAPSHOT, SERVICE_RESTORE)
 from homeassistant.const import STATE_ON, STATE_OFF
 
 import tests.common
 from homeassistant.components.media_player.monoprice import (
-    DATA_MONOPRICE, PLATFORM_SCHEMA, SERVICE_SNAPSHOT,
-    SERVICE_RESTORE, setup_platform)
+    DATA_MONOPRICE, PLATFORM_SCHEMA,  setup_platform)
 
 
 class AttrDict(dict):
